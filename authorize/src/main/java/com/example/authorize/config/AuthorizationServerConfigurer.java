@@ -1,6 +1,7 @@
 package com.example.authorize.config;
 
 import com.example.authorize.service.ClientDetailsServiceImpl;
+import com.example.authorize.service.CustomTokenServices;
 import com.example.authorize.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -42,15 +43,12 @@ public class AuthorizationServerConfigurer extends AuthorizationServerConfigurer
 
     @Primary
     @Bean
-    DefaultTokenServices tokenServices() {
-        DefaultTokenServices d = new DefaultTokenServices();
-        //d.setAccessTokenValiditySeconds(600);//设置token默认有效期，优先级最低
-        //d.setRefreshTokenValiditySeconds(1000);
+    CustomTokenServices tokenServices() {
+        CustomTokenServices d = new CustomTokenServices();
         d.setClientDetailsService(clientDetailsService);//此处必须设置后loadClientByClientId里面的token有效期设置才会生效
         d.setTokenStore(new InMemoryTokenStore());
-        // RedisTokenStore
-        // d.setReuseRefreshToken(false);//是否重复使用token
         d.setSupportRefreshToken(true);//是否支持refresh token,只有设置为true才能使用refreshtoken
+        d.setReuseAccessToken(false);//是否重复使用access_token,如果为false,则同一个用户可以拥有多个token
         return d;
     }
 
